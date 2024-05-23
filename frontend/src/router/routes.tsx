@@ -1,9 +1,14 @@
-import App from "../App.tsx";
+import Login from "../pages/login/Login.tsx";
+import Home from "../pages/home/Home.tsx";
 
 const ROUTES = [
   {
     path: "/",
-    element: <App />,
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]
 
