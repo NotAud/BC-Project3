@@ -4,6 +4,6 @@ import type expressWs from "express-ws";
 
 const router = express.Router() as expressWs.Router;
 
-router.use("/lobby", lobbyWebsocket);
+router.use("/lobbies", lobbyWebsocket);
 
 export default router;

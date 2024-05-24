@@ -1,6 +1,6 @@
 export default async function loginUser(username: string, password: string) {
   const query = `
-        mutation Login($username: String!, $password: String!) {
+        mutation login($username: String!, $password: String!) {
             login(username: $username, password: $password) {
                 token
                 user {
@@ -28,22 +28,32 @@ export default async function loginUser(username: string, password: string) {
       }),
     });
 
-    const data = await response.json();
+    const r = await response.json();
 
-    if (response.ok) {
-      // Login successful
-      const token = data.data.login.token;
-      const user = data.data.login.user;
-      console.log("Logged in successfully!");
-      console.log("Token:", token);
-      console.log("User:", user);
-      // Store the token for future authenticated requests
-      localStorage.setItem("token", token);
-    } else {
-      // Login failed
-      console.error("Login failed:", data.errors);
-    }
+    if (!response.ok) throw new Error("Bad Response");
+    if (r.errors) throw new Error(r.errors[0].message);
+    if (r.data === null) throw new Error("No Response");
+
+    // Login successful
+    const userData = r.data.login.user;
+    const token = r.data.login.token;
+
+    const user = {
+      id: userData.id,
+      username: userData.username,
+      token: token,
+    };
+    // Store the token for future authenticated requests
+    localStorage.setItem("user", JSON.stringify(user));
+
+    return {
+      data: r.data,
+      error: null,
+    };
   } catch (error) {
-    return null;
+    return {
+      data: null,
+      error: error,
+    };
   }
 }

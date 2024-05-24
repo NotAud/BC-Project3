@@ -2,6 +2,9 @@ import express from "express";
 import expressWs from "express-ws";
 import { dbConn } from "./database/connection.ts";
 import { ApolloServer } from "apollo-server-express";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import cors from "cors";
 
 import typeDefs from "./database/schema.ts";
 import resolvers from "./database/resolvers.ts";
@@ -25,18 +28,49 @@ async function createApp() {
 async function main() {
   const app = await createApp();
 
-  const server = new ApolloServer({
-    typeDefs: typeDefs,
-    resolvers: resolvers,
+  const httpServer = createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+    },
   });
 
-  await server.start();
-  server.applyMiddleware({ app });
+  const apolloServer = new ApolloServer({
+    typeDefs: typeDefs,
+    resolvers: resolvers,
+    context: ({ req }) => ({ req }),
+  });
 
-  app.listen(port, () => {
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ app });
+
+  io.on("connection", (socket) => {
+    console.log("a user connected");
+    socket.join("main");
+
+    socket.on("createLobby", (lobbyData: any) => {
+      io.to("main").emit("lobbyCreated", lobbyData);
+    });
+
+    socket.on("joinLobby", (lobbyId: string) => {
+      socket.join(lobbyId);
+      io.to(lobbyId).emit("userJoined", lobbyId);
+    });
+
+    socket.on("leaveLobby", (lobbyId) => {
+      socket.leave(lobbyId);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("user disconnected");
+    });
+  });
+
+  httpServer.listen(port, () => {
     console.log(`Listening on port ${port}...`);
     console.log(
-      `GraphQL ready at http://localhost:${port}${server.graphqlPath}`
+      `GraphQL ready at http://localhost:${port}${apolloServer.graphqlPath}`
     );
   });
 }
