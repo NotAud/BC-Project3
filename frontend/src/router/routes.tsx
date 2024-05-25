@@ -1,6 +1,7 @@
 import Home from "../pages/home/Home.tsx";
 import Login from "../pages/login/Login.tsx";
 import Signup from "../pages/login/Signup.tsx";
+import LobbyPage from "../pages/lobby/LobbyPage.tsx";
 
 import MainLayout from "../layouts/MainLayout.tsx";
 
@@ -24,6 +25,10 @@ const ROUTES = [
         path: "/signup",
         loader: AuthMiddleware,
         element: <Signup />
+      },
+      {
+        path: "/lobby/:id",
+        element: <LobbyPage />
       },
     ]
   },

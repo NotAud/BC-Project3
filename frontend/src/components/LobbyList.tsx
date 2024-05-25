@@ -16,22 +16,25 @@ export default function LobbyList() {
         if (data && data.lobbies) {
           setLobbies(data.lobbies);
         }
-      }, [data]);
+    }, [data]);
 
     useEffect(() => {
         if (!socket) return;
 
         socket.on("lobbyCreated", (newLobby: any) => {
-            setLobbies((prevLobbies: any) => [...prevLobbies, newLobby.data.createLobby]);
+            console.log(newLobby)
+            setLobbies((prevLobbies: any) => [...prevLobbies, newLobby]);
         });
     }, [socket])
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
+    console.log(lobbies)
+
     return (
         <div className="grid grid-cols-4 gap-4">
-            { lobbies.map((data: any, index: number) => <LobbyCard key={index} title={data.name} maxPlayers={data.maxPlayers} />) }
+            { lobbies.map((data: any, index: number) => <LobbyCard key={index} id={data.id} title={data.name} maxPlayers={data.maxPlayers} />) }
         </div>
     )
 }

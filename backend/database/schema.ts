@@ -24,12 +24,14 @@ const typeDefs = gql`
   type Query {
     getAllUsers: [User!]!
     lobbies: [Lobby!]!
+    lobby(lobbyId: ID!): Lobby!
   }
 
   type Mutation {
     createUser(username: String!, password: String!): User!
     login(username: String!, password: String!): AuthPayload!
     createLobby(name: String!, maxPlayers: Int!): Lobby!
+    joinLobby(lobbyId: ID!): Lobby!
   }
 `;
 

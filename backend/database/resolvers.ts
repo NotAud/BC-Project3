@@ -22,6 +22,16 @@ const resolvers = {
         throw new Error("Failed to retrieve lobbies");
       }
     },
+    lobby: async (_: any, { lobbyId }: any) => {
+      try {
+        const lobby = await LobbyModel.findById(lobbyId)
+          .populate("owner")
+          .populate("players");
+        return lobby;
+      } catch (error) {
+        throw new Error("Failed to retrieve lobby");
+      }
+    },
   },
   Mutation: {
     createUser: async (_: any, { username, password }: User) => {
@@ -90,8 +100,72 @@ const resolvers = {
         const savedLobby = await newLobby.save();
         await savedLobby.populate("owner");
 
-        return savedLobby;
+        const emittedLobby = {
+          id: savedLobby._id.toString(),
+          name: savedLobby.name,
+          maxPlayers: savedLobby.maxPlayers,
+          owner: savedLobby.owner,
+        };
+
+        const { io } = context;
+        io.to("main").emit("lobbyCreated", emittedLobby);
+
+        return emittedLobby;
       } catch (error) {
+        throw new Error("Authentication required");
+      }
+    },
+    joinLobby: async (_: any, { lobbyId }: any, context: any) => {
+      if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET is not defined");
+      }
+
+      const token = context.req.headers.authorization || "";
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      try {
+        const user = jwt.verify(token, process.env.JWT_SECRET) as any;
+        const lobby = await LobbyModel.findById(lobbyId);
+
+        if (!lobby) {
+          throw new Error("Lobby not found");
+        }
+
+        if (lobby.players.length >= lobby.maxPlayers) {
+          throw new Error("Lobby is full");
+        }
+
+        const isUserInLobby = lobby.players.some(
+          (player) => player.toString() === user.userId
+        );
+
+        if (isUserInLobby) {
+          await lobby.populate("owner");
+          await lobby.populate("players");
+          return lobby;
+        }
+
+        lobby.players.push(user.userId);
+        await lobby.save();
+
+        await lobby.populate("owner");
+        await lobby.populate("players");
+
+        const { io } = context;
+        const emittedLobby = {
+          id: lobby._id.toString(),
+          name: lobby.name,
+          maxPlayers: lobby.maxPlayers,
+          owner: lobby.owner,
+          players: lobby.players,
+        };
+        io.to(lobbyId).emit("lobbyUpdated", emittedLobby);
+
+        return emittedLobby;
+      } catch (error) {
+        console.log(error);
         throw new Error("Authentication required");
       }
     },

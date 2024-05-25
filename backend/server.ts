@@ -39,7 +39,7 @@ async function main() {
   const apolloServer = new ApolloServer({
     typeDefs: typeDefs,
     resolvers: resolvers,
-    context: ({ req }) => ({ req }),
+    context: ({ req }) => ({ req, io }),
   });
 
   await apolloServer.start();
@@ -49,13 +49,12 @@ async function main() {
     console.log("a user connected");
     socket.join("main");
 
-    socket.on("createLobby", (lobbyData: any) => {
-      io.to("main").emit("lobbyCreated", lobbyData);
-    });
+    // socket.on("createLobby", (lobbyData: any) => {
+    //   io.to("main").emit("lobbyCreated", lobbyData);
+    // });
 
     socket.on("joinLobby", (lobbyId: string) => {
       socket.join(lobbyId);
-      io.to(lobbyId).emit("userJoined", lobbyId);
     });
 
     socket.on("leaveLobby", (lobbyId) => {
