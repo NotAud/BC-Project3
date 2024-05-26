@@ -107,8 +107,10 @@ export default function LobbyPage() {
 
         const { token } = JSON.parse(userData);
 
-        const isCorrect = currentQuestion.correctAnswer === answer;
-        
+        const isCorrect = currentQuestion.correct === answer;
+
+        console.log(isCorrect, currentQuestion.correct, answer)
+
         setAnswer(answer);
         submitAnswer({ 
             variables: { lobbyId: id, score: isCorrect ? 1 : 0 }, 

@@ -1,3 +1,5 @@
+import QUESTION_JSON from "../../util/questions.json";
+
 type PlayerScore = {
   id: string;
   score: number;
@@ -9,25 +11,9 @@ type Question = {
   correctAnswer: string;
 };
 
-const questions: Question[] = [
-  {
-    question: "What is 1+1?",
-    answers: ["1", "2", "3", "4"],
-    correctAnswer: "2",
-  },
-  {
-    question: "What is 2+2?",
-    answers: ["1", "2", "3", "4"],
-    correctAnswer: "4",
-  },
-  {
-    question: "What is 3+3?",
-    answers: ["1", "2", "3", "6"],
-    correctAnswer: "6",
-  },
-];
+const questions: Question[] = QUESTION_JSON as unknown as Question[];
 
-const MAX_ROUNDS = 2;
+const MAX_ROUNDS = 10;
 const ROUND_TIME = 5;
 
 export default class GameManager {
@@ -76,6 +62,7 @@ export default class GameManager {
   async generateQuestion() {
     const randomIndex = Math.floor(Math.random() * questions.length);
     const question = questions[randomIndex];
+    console.log(questions);
     this.emitToPlayers("question", question);
   }
 

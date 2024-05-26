@@ -44,15 +44,15 @@ async function main() {
     });
 
     socket.on("joinLobby", (lobbyId: string) => {
+      socket.rooms.forEach((room) => {
+        socket.leave(room);
+      });
+
       socket.join(lobbyId);
     });
 
     socket.on("answer", (lobbyId: string, userId: string, score: any) => {
       io.to(lobbyId).emit("answer", userId, score);
-    });
-
-    socket.on("leaveLobby", (lobbyId) => {
-      socket.leave(lobbyId);
     });
 
     socket.on("disconnect", () => {
