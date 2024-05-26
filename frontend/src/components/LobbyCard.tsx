@@ -6,7 +6,7 @@ import { useSocket } from "../composables/socket/useSocket";
 type Lobby = {
     id: string;
     title: string;
-    // playerCount: number;
+    playerCount: number;
     maxPlayers: number;
 }
 
@@ -45,7 +45,7 @@ export default function LobbyCard(lobby: Lobby) {
     <div className="flex flex-col gap-y-6 bg-white rounded-lg shadow-md p-4">
       <div className="flex flex-col flex-grow">
         <span className="text-lg font-semibold">{ lobby.title }</span>
-        <span className="text-sm text-gray-500">0 / { lobby.maxPlayers }</span>
+        <span className="text-sm text-gray-500">{ lobby.playerCount } / { lobby.maxPlayers }</span>
       </div>
       <button className="bg-zinc-900 rounded-lg py-1 text-white" onClick={handleJoinLobby}>Join</button>
     </div>

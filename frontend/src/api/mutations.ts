@@ -14,6 +14,14 @@ export const CREATE_LOBBY_MUTATION = gql`
   }
 `;
 
+export const START_GAME_MUTATION = gql`
+  mutation startGame($lobbyId: ID!) {
+    startGame(lobbyId: $lobbyId) {
+      id
+    }
+  }
+`;
+
 export const GET_ALL_LOBBIES_QUERY = gql`
   query getAllLobbies {
     lobbies {
@@ -23,6 +31,13 @@ export const GET_ALL_LOBBIES_QUERY = gql`
       owner {
         id
         username
+      }
+      players {
+        user {
+          id
+          username
+        }
+        score
       }
     }
   }
@@ -39,8 +54,11 @@ export const JOIN_LOBBY_MUTATION = gql`
         username
       }
       players {
-        id
-        username
+        user {
+          id
+          username
+        }
+        score
       }
     }
   }
@@ -57,8 +75,32 @@ export const GET_LOBBY_QUERY = gql`
         username
       }
       players {
+        user {
+          id
+          username
+        }
+        score
+      }
+    }
+  }
+`;
+
+export const SUBMIT_ANSWER_MUTATION = gql`
+  mutation submitAnswer($lobbyId: ID!, $score: Int!) {
+    submitAnswer(lobbyId: $lobbyId, score: $score) {
+      id
+      name
+      maxPlayers
+      owner {
         id
         username
+      }
+      players {
+        user {
+          id
+          username
+        }
+        score
       }
     }
   }

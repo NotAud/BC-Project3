@@ -4,7 +4,6 @@ const typeDefs = gql`
   type User {
     id: ID!
     username: String!
-    password: String!
   }
 
   type AuthPayload {
@@ -12,11 +11,16 @@ const typeDefs = gql`
     user: User!
   }
 
+  type Player {
+    user: User!
+    score: Int!
+  }
+
   type Lobby {
     id: ID!
     name: String!
     owner: User!
-    players: [User!]!
+    players: [Player!]!
     maxPlayers: Int!
     createdAt: String!
   }
@@ -32,6 +36,8 @@ const typeDefs = gql`
     login(username: String!, password: String!): AuthPayload!
     createLobby(name: String!, maxPlayers: Int!): Lobby!
     joinLobby(lobbyId: ID!): Lobby!
+    startGame(lobbyId: ID!): Lobby!
+    submitAnswer(lobbyId: ID!, score: Int!): Lobby!
   }
 `;
 

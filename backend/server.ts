@@ -36,25 +36,19 @@ async function main() {
     },
   });
 
-  const apolloServer = new ApolloServer({
-    typeDefs: typeDefs,
-    resolvers: resolvers,
-    context: ({ req }) => ({ req, io }),
-  });
-
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
-
   io.on("connection", (socket) => {
     console.log("a user connected");
-    socket.join("main");
 
-    // socket.on("createLobby", (lobbyData: any) => {
-    //   io.to("main").emit("lobbyCreated", lobbyData);
-    // });
+    socket.on("joinMain", () => {
+      socket.join("main");
+    });
 
     socket.on("joinLobby", (lobbyId: string) => {
       socket.join(lobbyId);
+    });
+
+    socket.on("answer", (lobbyId: string, userId: string, score: any) => {
+      io.to(lobbyId).emit("answer", userId, score);
     });
 
     socket.on("leaveLobby", (lobbyId) => {
@@ -65,6 +59,15 @@ async function main() {
       console.log("user disconnected");
     });
   });
+
+  const apolloServer = new ApolloServer({
+    typeDefs: typeDefs,
+    resolvers: resolvers,
+    context: ({ req }) => ({ req, io }),
+  });
+
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ app });
 
   httpServer.listen(port, () => {
     console.log(`Listening on port ${port}...`);

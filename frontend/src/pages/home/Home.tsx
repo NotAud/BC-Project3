@@ -3,11 +3,18 @@ import { CREATE_LOBBY_MUTATION } from "../../api/mutations";
 
 import LobbyList from "../../components/LobbyList";
 import { useSocket } from "../../composables/socket/useSocket";
+import { useEffect } from "react";
 
 export default function Home() {
     const [createLobby] = useMutation(CREATE_LOBBY_MUTATION);
 
     const socket = useSocket();
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.emit("joinMain");
+    }, [socket]);
+    
 
     async function handleCreateLobby() {
         const user = localStorage.getItem('user');

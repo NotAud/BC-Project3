@@ -21,10 +21,25 @@ export default function LobbyList() {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on("lobbyCreated", (newLobby: any) => {
-            console.log(newLobby)
+        const handleLobbyCreated = (newLobby: any) => {
             setLobbies((prevLobbies: any) => [...prevLobbies, newLobby]);
-        });
+        };
+
+        const handleLobbyUpdated = (updatedLobby: any) => {
+            setLobbies((prevLobbies: any) =>
+                prevLobbies.map((lobby: any) =>
+                    lobby.id === updatedLobby.id ? { ...lobby, players: updatedLobby.players } : lobby
+                )
+            );
+        };
+
+        socket.on("lobbyCreated", handleLobbyCreated);
+        socket.on("lobbiesUpdated", handleLobbyUpdated)
+
+        return () => {
+            socket.off("lobbyCreated", handleLobbyCreated);
+            socket.off("lobbiesUpdated", handleLobbyUpdated);
+        };
     }, [socket])
 
     if (loading) return <p>Loading...</p>;
@@ -34,7 +49,7 @@ export default function LobbyList() {
 
     return (
         <div className="grid grid-cols-4 gap-4">
-            { lobbies.map((data: any, index: number) => <LobbyCard key={index} id={data.id} title={data.name} maxPlayers={data.maxPlayers} />) }
+            { lobbies.map((data: any, index: number) => <LobbyCard key={index} id={data.id} title={data.name} maxPlayers={data.maxPlayers} playerCount={data.players.length} />) }
         </div>
     )
 }

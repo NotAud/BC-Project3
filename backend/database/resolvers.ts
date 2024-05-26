@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 import UserModel from "./models/user.model";
 import LobbyModel from "./models/lobby.model";
+import GameManager from "../api/gamemanager/gameManager";
 
 type User = {
   username: string;
@@ -16,7 +17,9 @@ const resolvers = {
     },
     lobbies: async () => {
       try {
-        const lobbies = await LobbyModel.find().populate("owner");
+        const lobbies = await LobbyModel.find()
+          .populate("owner")
+          .populate("players.user");
         return lobbies;
       } catch (error) {
         throw new Error("Failed to retrieve lobbies");
@@ -26,7 +29,8 @@ const resolvers = {
       try {
         const lobby = await LobbyModel.findById(lobbyId)
           .populate("owner")
-          .populate("players");
+          .populate("players.user");
+        console.log(lobby);
         return lobby;
       } catch (error) {
         throw new Error("Failed to retrieve lobby");
@@ -100,17 +104,10 @@ const resolvers = {
         const savedLobby = await newLobby.save();
         await savedLobby.populate("owner");
 
-        const emittedLobby = {
-          id: savedLobby._id.toString(),
-          name: savedLobby.name,
-          maxPlayers: savedLobby.maxPlayers,
-          owner: savedLobby.owner,
-        };
-
         const { io } = context;
-        io.to("main").emit("lobbyCreated", emittedLobby);
+        io.to("main").emit("lobbyCreated", savedLobby);
 
-        return emittedLobby;
+        return savedLobby;
       } catch (error) {
         throw new Error("Authentication required");
       }
@@ -137,35 +134,104 @@ const resolvers = {
           throw new Error("Lobby is full");
         }
 
+        console.log(lobby.players);
         const isUserInLobby = lobby.players.some(
-          (player) => player.toString() === user.userId
+          (player) => player.user?.toString() === user.userId.toString()
         );
 
         if (isUserInLobby) {
           await lobby.populate("owner");
-          await lobby.populate("players");
+          await lobby.populate("players.user");
           return lobby;
         }
+        console.log("test");
 
-        lobby.players.push(user.userId);
+        lobby.players.push({ user: user.userId, score: 0 });
         await lobby.save();
 
         await lobby.populate("owner");
-        await lobby.populate("players");
+        await lobby.populate("players.user");
 
         const { io } = context;
-        const emittedLobby = {
-          id: lobby._id.toString(),
-          name: lobby.name,
-          maxPlayers: lobby.maxPlayers,
-          owner: lobby.owner,
-          players: lobby.players,
-        };
-        io.to(lobbyId).emit("lobbyUpdated", emittedLobby);
+        io.to(lobbyId).emit("lobbyUpdated", lobby);
+        io.emit("lobbiesUpdated", lobby);
 
-        return emittedLobby;
+        return lobby;
       } catch (error) {
         console.log(error);
+        throw new Error("Authentication required");
+      }
+    },
+    startGame: async (_: any, { lobbyId }: any, context: any) => {
+      if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET is not defined");
+      }
+
+      const token = context.req.headers.authorization || "";
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      try {
+        const user = jwt.verify(token, process.env.JWT_SECRET) as any;
+        const lobby = await LobbyModel.findById(lobbyId);
+
+        if (!lobby) {
+          throw new Error("Lobby not found");
+        }
+
+        if (lobby.owner.toString() !== user.userId) {
+          throw new Error("Only the lobby owner can start the game");
+        }
+
+        const game = new GameManager(lobbyId, lobby.players, context.io);
+        game.startGame();
+
+        return lobby;
+      } catch (error) {
+        throw new Error("Authentication required");
+      }
+    },
+    submitAnswer: async (_: any, { lobbyId, score }: any, context: any) => {
+      if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET is not defined");
+      }
+
+      const token = context.req.headers.authorization;
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      try {
+        const user = jwt.verify(token, process.env.JWT_SECRET) as any;
+        if (!user.userId) {
+          throw new Error("User not found");
+        }
+
+        const lobby = await LobbyModel.findById(lobbyId);
+
+        if (!lobby) {
+          throw new Error("Lobby not found");
+        }
+
+        const player = lobby.players.find(
+          (player) => player.user?.toString() === user.userId
+        );
+
+        if (!player) {
+          throw new Error("Player not found in lobby");
+        }
+
+        player.score += score;
+        await lobby.save();
+        await lobby.populate("owner");
+        await lobby.populate("players.user");
+
+        const { io } = context;
+        io.to(lobbyId).emit("lobbyUpdated", lobby);
+
+        return lobby;
+      } catch (error) {
         throw new Error("Authentication required");
       }
     },
