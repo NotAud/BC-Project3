@@ -3,6 +3,8 @@ import HeaderLogin from '../components/HeaderLogin';
 
 
 export default function MainLayout() {
+    const currentYear = new Date().getFullYear()
+
     return(
         <div className="flex flex-col w-full h-full">
             <header className="flex justify-between bg-purple-300 py-2 px-4">
@@ -16,7 +18,9 @@ export default function MainLayout() {
             <main className="flex flex-grow">
                 <Outlet />
             </main>
-            <footer>Footer</footer>
+            <footer className="text-center">
+                <span>Ron Miller © {currentYear}</span>
+            </footer>
         </div>
     )
 }

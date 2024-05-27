@@ -9,7 +9,7 @@ type Question = {
 
 const questions: Question[] = QUESTION_JSON as unknown as Question[];
 
-const MAX_ROUNDS = 1;
+const MAX_ROUNDS = 10;
 const ROUND_TIME = 5;
 
 export default class GameManager {

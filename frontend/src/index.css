@@ -29,3 +29,7 @@ input {
 input:focus {
   @apply border-none outline-none;
 }
+
+.grid-auto-fill-auto {
+  grid-template-columns: auto 1fr auto;
+}

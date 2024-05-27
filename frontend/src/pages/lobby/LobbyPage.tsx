@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import LobbyPlayerList from "../../components/LobbyPlayerList";
 import { useSocket } from "../../composables/socket/useSocket";
+import GameOver from "../../components/GameOver";
 
 export default function LobbyPage() {
     const socket = useSocket();
@@ -131,7 +132,7 @@ export default function LobbyPage() {
                 return <button onClick={handleStartGame} className="bg-green-900 h-fit px-8 py-4 rounded-[4px] text-white hover:bg-green-900/90 transition-all">Start Game</button>
             }
 
-            return <p>Waiting to start...</p>
+            return <p>Waiting for host to start game...</p>
         } else if (lobby.gameStatus === "started") {
             if (currentQuestion) {
                 if (answer) {
@@ -150,7 +151,7 @@ export default function LobbyPage() {
                 )
             }
         } else if (lobby.gameStatus === "ended") {
-            return <p>Game ended</p>
+            return <GameOver players={lobby.players} />
         } else {
             return <p>Unknown game status</p>
         }
@@ -158,10 +159,10 @@ export default function LobbyPage() {
 
     return (
         <div className="flex flex-col p-4 flex-grow gap-y-2">
-            <h1 className="text-[24px] font-medium text-center select-none">Lobby: { lobby.name }</h1>
+            <h1 className="text-[24px] font-medium text-start select-none">Lobby: { lobby.name }</h1>
             <hr />
             <div className="flex flex-grow gap-x-8">
-                <LobbyPlayerList players={lobby.players} />
+                <LobbyPlayerList players={lobby.players} ownerId={lobby.owner.id} />
                 <div className="flex flex-grow justify-center items-center">
                     <GameStateRender />
                 </div>

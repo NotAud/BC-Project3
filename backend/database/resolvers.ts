@@ -17,7 +17,9 @@ const resolvers = {
     },
     lobbies: async () => {
       try {
-        const lobbies = await LobbyModel.find()
+        const lobbies = await LobbyModel.find({
+          gameStatus: { $in: ["waiting", "started"] },
+        })
           .populate("owner")
           .populate("players.user");
         return lobbies;

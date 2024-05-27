@@ -37,8 +37,6 @@ async function main() {
   });
 
   io.on("connection", (socket) => {
-    console.log("a user connected");
-
     socket.on("joinMain", () => {
       socket.join("main");
     });
@@ -55,9 +53,7 @@ async function main() {
       io.to(lobbyId).emit("answer", userId, score);
     });
 
-    socket.on("disconnect", () => {
-      console.log("user disconnected");
-    });
+    socket.on("disconnect", () => {});
   });
 
   const apolloServer = new ApolloServer({
