@@ -23,6 +23,7 @@ const typeDefs = gql`
     players: [Player!]!
     maxPlayers: Int!
     createdAt: String!
+    gameStatus: String!
   }
 
   type Query {

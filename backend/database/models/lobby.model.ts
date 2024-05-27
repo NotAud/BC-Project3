@@ -28,6 +28,7 @@ const lobbySchema = new mongoose.Schema({
   },
   gameStatus: {
     type: String,
+    enum: ["waiting", "started", "ended"],
     default: "waiting",
   },
   createdAt: {

@@ -81,6 +81,7 @@ export const GET_LOBBY_QUERY = gql`
         }
         score
       }
+      gameStatus
     }
   }
 `;

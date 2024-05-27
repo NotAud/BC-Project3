@@ -23,25 +23,28 @@ export default function LobbyPage() {
     const [submitAnswer] = useMutation(SUBMIT_ANSWER_MUTATION);
 
     useEffect(() => {
-        console.log(data)
-        if (data && data.lobby) {
+        if (data && data.lobby && !lobby) {
+            console.log("initial", data.lobby)
             setLobby(data.lobby);
-            console.log(data.lobby)
         }
-    }, [data]);
+    }, [data, lobby]);
 
     useEffect(() => {
         if (!socket) return;
       
+        socket.emit("joinLobby", id);
+
         socket.on("lobbyUpdated", (updatedLobby: any) => {
-            console.log(updatedLobby)
+            console.log("updated", updatedLobby)
             setLobby(updatedLobby)
         });
 
-        socket.on("gameStarted", () => {
-            console.log("Game started")
+        socket.on("gameStarted", (updatedLobby: any) => {
+            console.log("Game started", updatedLobby)
             setAnswer(null);
             setCurrentQuestion(null);
+
+            setLobby(updatedLobby)
         })
 
         socket.on("roundEnded", () => {
@@ -49,10 +52,12 @@ export default function LobbyPage() {
             setCurrentQuestion(null);
         })
 
-        socket.on("gameEnded", (scores: any) => {
-            console.log("Game ended", scores)
+        socket.on("gameEnded", (updatedLobby: any) => {
+            console.log("Game ended", updatedLobby)
             setAnswer(null);
             setCurrentQuestion(null);
+
+            setLobby(updatedLobby)
         })
 
         socket.on("question", (question: any) => {
@@ -68,7 +73,7 @@ export default function LobbyPage() {
             socket.off("answer")
         }
     
-    }, [socket, currentQuestion]);
+    }, [socket, currentQuestion, id]);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -99,8 +104,6 @@ export default function LobbyPage() {
     if (loading || !lobby) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
-    socket.emit("joinLobby", id);
-
     function handleAnswer(answer: string) {
         const userData = localStorage.getItem('user');
         if (!userData) return;
@@ -108,8 +111,6 @@ export default function LobbyPage() {
         const { token } = JSON.parse(userData);
 
         const isCorrect = currentQuestion.correct === answer;
-
-        console.log(isCorrect, currentQuestion.correct, answer)
 
         setAnswer(answer);
         submitAnswer({ 
@@ -122,32 +123,49 @@ export default function LobbyPage() {
         })
     }
 
-    const QuestionRender = () => {
-        if (answer) {
-            return <p>Your answer: {answer}</p>
-        }
+    const GameStateRender = () => {
+        console.log("render", lobby)
 
-        if (currentQuestion) {
-            return (
-                <div>
-                    <p>{currentQuestion.question}</p>
-                    <ul>
-                        {currentQuestion.answers.map((answer: any) => (
-                            <button key={answer} onClick={() => handleAnswer(answer)}>{answer}</button>
-                        ))}
-                    </ul>
-                </div>
-            )
+        if (lobby.gameStatus === "waiting") {
+            if (isOwner) {
+                return <button onClick={handleStartGame} className="bg-green-900 h-fit px-8 py-4 rounded-[4px] text-white hover:bg-green-900/90 transition-all">Start Game</button>
+            }
+
+            return <p>Waiting to start...</p>
+        } else if (lobby.gameStatus === "started") {
+            if (currentQuestion) {
+                if (answer) {
+                    return <p>Your answer: {answer}</p>
+                }
+                
+                return (
+                    <div>
+                        <p>{currentQuestion.question}</p>
+                        <ul>
+                            {currentQuestion.answers.map((answer: any) => (
+                                <button key={answer} onClick={() => handleAnswer(answer)}>{answer}</button>
+                            ))}
+                        </ul>
+                    </div>
+                )
+            }
+        } else if (lobby.gameStatus === "ended") {
+            return <p>Game ended</p>
+        } else {
+            return <p>Unknown game status</p>
         }
-        return <p>No question</p>
     }
 
     return (
-        <div>
-        <h1>Lobby Page: {id}</h1>
-        <LobbyPlayerList players={lobby.players} />
-        {isOwner && <button onClick={handleStartGame}>Start Game</button>}
-        <QuestionRender />
+        <div className="flex flex-col p-4 flex-grow gap-y-2">
+            <h1 className="text-[24px] font-medium text-center select-none">Lobby: { lobby.name }</h1>
+            <hr />
+            <div className="flex flex-grow gap-x-8">
+                <LobbyPlayerList players={lobby.players} />
+                <div className="flex flex-grow justify-center items-center">
+                    <GameStateRender />
+                </div>
+            </div>
         </div>
     )
 }

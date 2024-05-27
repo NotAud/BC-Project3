@@ -30,7 +30,6 @@ const resolvers = {
         const lobby = await LobbyModel.findById(lobbyId)
           .populate("owner")
           .populate("players.user");
-        console.log(lobby);
         return lobby;
       } catch (error) {
         throw new Error("Failed to retrieve lobby");
@@ -58,7 +57,7 @@ const resolvers = {
     },
     login: async (_: any, { username, password }: User) => {
       // Find the user by username
-      const user = await UserModel.findOne({ username });
+      const user = await UserModel.findOne({ username }).select("+password");
 
       if (!user) {
         throw new Error("User not found");
@@ -134,7 +133,6 @@ const resolvers = {
           throw new Error("Lobby is full");
         }
 
-        console.log(lobby.players);
         const isUserInLobby = lobby.players.some(
           (player) => player.user?.toString() === user.userId.toString()
         );
@@ -144,7 +142,6 @@ const resolvers = {
           await lobby.populate("players.user");
           return lobby;
         }
-        console.log("test");
 
         lobby.players.push({ user: user.userId, score: 0 });
         await lobby.save();
@@ -184,7 +181,7 @@ const resolvers = {
           throw new Error("Only the lobby owner can start the game");
         }
 
-        const game = new GameManager(lobbyId, lobby.players, context.io);
+        const game = new GameManager(lobby, context.io);
         game.startGame();
 
         return lobby;
@@ -226,6 +223,8 @@ const resolvers = {
         await lobby.save();
         await lobby.populate("owner");
         await lobby.populate("players.user");
+
+        console.log(lobby);
 
         const { io } = context;
         io.to(lobbyId).emit("lobbyUpdated", lobby);

@@ -13,7 +13,7 @@ export default function MainLayout() {
                     <HeaderLogin />
                 </div>
             </header>
-            <main className="flex-grow">
+            <main className="flex flex-grow">
                 <Outlet />
             </main>
             <footer>Footer</footer>

@@ -1,9 +1,5 @@
 import QUESTION_JSON from "../../util/questions.json";
-
-type PlayerScore = {
-  id: string;
-  score: number;
-};
+import LobbyModel from "../../database/models/lobby.model";
 
 type Question = {
   question: string;
@@ -13,42 +9,46 @@ type Question = {
 
 const questions: Question[] = QUESTION_JSON as unknown as Question[];
 
-const MAX_ROUNDS = 10;
+const MAX_ROUNDS = 1;
 const ROUND_TIME = 5;
 
 export default class GameManager {
-  id: string;
-  scores: PlayerScore[];
+  lobby: any;
   round: number = 0;
   socket: any;
 
-  constructor(lobbyId: string, players: any[], socket: any) {
-    this.id = lobbyId;
+  constructor(lobby: any, socket: any) {
+    this.lobby = lobby;
     this.socket = socket;
-
-    this.scores = [];
-    players.forEach((player) => {
-      this.scores.push({
-        id: player.toString(),
-        score: 0,
-      });
-    });
   }
 
   async startGame() {
-    this.emitToPlayers("gameStarted");
+    this.lobby.gameStatus = "started";
+    await this.lobby.save();
+
+    await this.lobby.populate("owner");
+    await this.lobby.populate("players.user");
+
+    this.emitToPlayers("gameStarted", this.lobby);
     this.generateQuestion();
 
     let currentTime = new Date().getTime();
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const elapsedTime = new Date().getTime() - currentTime;
       if (elapsedTime >= ROUND_TIME * 1000) {
-        this.emitToPlayers("roundEnded", this.scores);
+        this.lobby = await LobbyModel.findById(this.lobby.id)
+          .populate("owner")
+          .populate("players.user");
+
+        this.emitToPlayers("roundEnded", this.lobby);
 
         currentTime = new Date().getTime();
         this.round++;
         if (this.round === MAX_ROUNDS) {
-          this.emitToPlayers("gameEnded", this.scores);
+          this.lobby.gameStatus = "ended";
+          await this.lobby.save();
+
+          this.emitToPlayers("gameEnded", this.lobby);
           clearInterval(interval);
 
           return;
@@ -62,11 +62,10 @@ export default class GameManager {
   async generateQuestion() {
     const randomIndex = Math.floor(Math.random() * questions.length);
     const question = questions[randomIndex];
-    console.log(questions);
     this.emitToPlayers("question", question);
   }
 
   emitToPlayers(event: string, data?: any) {
-    this.socket.to(this.id).emit(event, data);
+    this.socket.to(this.lobby.id).emit(event, data);
   }
 }
