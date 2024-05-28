@@ -4,7 +4,6 @@ import { dbConn } from "./database/connection.ts";
 import { ApolloServer } from "apollo-server-express";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import cors from "cors";
 
 import typeDefs from "./database/schema.ts";
 import resolvers from "./database/resolvers.ts";

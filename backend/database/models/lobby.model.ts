@@ -26,10 +26,42 @@ const lobbySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  gameStatus: {
-    type: String,
-    enum: ["waiting", "started", "ended"],
-    default: "waiting",
+  game: {
+    status: {
+      type: String,
+      enum: ["waiting", "started", "ended"],
+      default: "waiting",
+    },
+    currentQuestion: {
+      question: {
+        type: String,
+        default: null,
+      },
+      answers: {
+        type: [String],
+        default: [],
+      },
+      correct: {
+        type: String,
+        default: null,
+      },
+    },
+    currentRound: {
+      type: Number,
+      default: 0,
+    },
+    totalRounds: {
+      type: Number,
+      default: 10,
+    },
+    roundTimestamp: {
+      type: Date,
+      default: null,
+    },
+    roundTime: {
+      type: Number,
+      default: 10,
+    },
   },
   createdAt: {
     type: Date,

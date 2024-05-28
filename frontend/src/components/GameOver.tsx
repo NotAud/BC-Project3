@@ -32,10 +32,11 @@ export default function GameOver({ players }: any) {
                     {sortedPlayers[0] ? <WinnerCard player={sortedPlayers[0]} place={0} /> : null}
                     {sortedPlayers[2] ? <WinnerCard player={sortedPlayers[2]} place={2} /> : null}
                 </div>
+                <hr />
                 <div className="grid grid-auto-fill-auto gap-x-4 w-[80%] self-center">
                     <span></span>
-                    <span>Player</span>
-                    <span>Score</span>
+                    <span className="text-[18px] font-medium">Player</span>
+                    <span className="text-[18px] font-medium">Score</span>
                     {sortedPlayers.map((player, index) => (
                         <Fragment key={player.user.id}>
                             <span>{ordinalSuffix(index + 1)}</span>

@@ -60,6 +60,18 @@ export const JOIN_LOBBY_MUTATION = gql`
         }
         score
       }
+      game {
+        currentQuestion {
+          question
+          answers
+          correct
+        }
+        currentRound
+        totalRounds
+        roundTimestamp
+        roundTime
+        status
+      }
     }
   }
 `;
@@ -81,7 +93,18 @@ export const GET_LOBBY_QUERY = gql`
         }
         score
       }
-      gameStatus
+      game {
+        currentQuestion {
+          question
+          answers
+          correct
+        }
+        currentRound
+        totalRounds
+        roundTimestamp
+        roundTime
+        status
+      }
     }
   }
 `;
@@ -102,6 +125,18 @@ export const SUBMIT_ANSWER_MUTATION = gql`
           username
         }
         score
+      }
+      game {
+        currentQuestion {
+          question
+          answers
+          correct
+        }
+        currentRound
+        totalRounds
+        roundTimestamp
+        roundTime
+        status
       }
     }
   }

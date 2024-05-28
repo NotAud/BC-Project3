@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import LobbyPlayerList from "../../components/LobbyPlayerList";
 import { useSocket } from "../../composables/socket/useSocket";
 import GameOver from "../../components/GameOver";
+import RoundTimer from "../../components/RoundTimer";
 
 export default function LobbyPage() {
     const socket = useSocket();
@@ -13,8 +14,8 @@ export default function LobbyPage() {
 
     const [lobby, setLobby] = useState<any>(null);
     const [isOwner, setIsOwner] = useState(false);
-    const [currentQuestion, setCurrentQuestion] = useState<any>(null);
     const [answer, setAnswer] = useState<any>(null);
+    const [wasCorrect, setWasCorrect] = useState(false);
 
     const { loading, error, data } = useQuery(GET_LOBBY_QUERY, {
         variables: { lobbyId: id },
@@ -36,6 +37,18 @@ export default function LobbyPage() {
         socket.emit("joinLobby", id);
 
         socket.on("lobbyUpdated", (updatedLobby: any) => {
+            const userData = localStorage.getItem('user');
+            if (!userData) return;
+
+            const { id } = JSON.parse(userData);
+
+            const currentPlayerData = lobby.players.find((player: any) => player.user.id === id);
+            const updatedPlayerData = updatedLobby.players.find((player: any) => player.user.id === id);
+
+            if (currentPlayerData.score < updatedPlayerData.score) {
+                setWasCorrect(true);
+            }
+
             console.log("updated", updatedLobby)
             setLobby(updatedLobby)
         });
@@ -43,38 +56,36 @@ export default function LobbyPage() {
         socket.on("gameStarted", (updatedLobby: any) => {
             console.log("Game started", updatedLobby)
             setAnswer(null);
-            setCurrentQuestion(null);
+            setWasCorrect(false);
 
             setLobby(updatedLobby)
         })
 
-        socket.on("roundEnded", () => {
+        socket.on("roundStarted", (updatedLobby: any) => {
+            console.log("Round started", updatedLobby)
             setAnswer(null);
-            setCurrentQuestion(null);
+            setWasCorrect(false);
+
+            setLobby(updatedLobby)
         })
 
         socket.on("gameEnded", (updatedLobby: any) => {
             console.log("Game ended", updatedLobby)
             setAnswer(null);
-            setCurrentQuestion(null);
+            setWasCorrect(false);
 
             setLobby(updatedLobby)
         })
-
-        socket.on("question", (question: any) => {
-            setAnswer(null);
-            setCurrentQuestion(question);
-        });
 
         return () => {
             socket.off("lobbyUpdated");
             socket.off("gameStarted");
             socket.off("gameEnded");
-            socket.off("question");
+            socket.off("roundStarted");
             socket.off("answer")
         }
     
-    }, [socket, currentQuestion, id]);
+    }, [socket, id, wasCorrect, lobby]);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -111,7 +122,7 @@ export default function LobbyPage() {
 
         const { token } = JSON.parse(userData);
 
-        const isCorrect = currentQuestion.correct === answer;
+        const isCorrect = lobby.game.currentQuestion.correct === answer;
 
         setAnswer(answer);
         submitAnswer({ 
@@ -127,30 +138,34 @@ export default function LobbyPage() {
     const GameStateRender = () => {
         console.log("render", lobby)
 
-        if (lobby.gameStatus === "waiting") {
+        if (lobby.game.status === "waiting") {
             if (isOwner) {
                 return <button onClick={handleStartGame} className="bg-green-900 h-fit px-8 py-4 rounded-[4px] text-white hover:bg-green-900/90 transition-all">Start Game</button>
             }
 
             return <p>Waiting for host to start game...</p>
-        } else if (lobby.gameStatus === "started") {
-            if (currentQuestion) {
-                if (answer) {
-                    return <p>Your answer: {answer}</p>
-                }
-                
+        } else if (lobby.game.status === "started") {
+            if (lobby.game.currentQuestion) {
                 return (
-                    <div>
-                        <p>{currentQuestion.question}</p>
-                        <ul>
-                            {currentQuestion.answers.map((answer: any) => (
-                                <button key={answer} onClick={() => handleAnswer(answer)}>{answer}</button>
+                    <div className="flex flex-col gap-y-4 w-full h-full">
+                        <div className="flex items-center justify-center h-1/2 border rounded-md w-full shadow-md">
+                            <RoundTimer roundTimestamp={lobby.game.roundTimestamp} roundTime={lobby.game.roundTime} />
+                            <h1 className="font-medium text-[24px] select-none">{lobby.game.currentQuestion.question}</h1>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            {lobby.game.currentQuestion.answers.map((answerChoice: any) => (
+                                <button 
+                                key={answerChoice} 
+                                onClick={() => handleAnswer(answerChoice)} 
+                                disabled={answer !== null}
+                                className={`${answer === answerChoice ? (wasCorrect ? 'border-green-400' : 'border-red-400') : ''} border rounded-md py-4 transition-all hover:scale-105 shadow-md`}
+                                >{answerChoice}</button>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 )
             }
-        } else if (lobby.gameStatus === "ended") {
+        } else if (lobby.game.status === "ended") {
             return <GameOver players={lobby.players} />
         } else {
             return <p>Unknown game status</p>

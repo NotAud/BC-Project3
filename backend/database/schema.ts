@@ -16,6 +16,21 @@ const typeDefs = gql`
     score: Int!
   }
 
+  type Question {
+    question: String
+    answers: [String!]!
+    correct: String
+  }
+
+  type Game {
+    currentQuestion: Question
+    currentRound: Int!
+    totalRounds: Int!
+    roundTimestamp: String
+    roundTime: Int!
+    status: String!
+  }
+
   type Lobby {
     id: ID!
     name: String!
@@ -23,7 +38,7 @@ const typeDefs = gql`
     players: [Player!]!
     maxPlayers: Int!
     createdAt: String!
-    gameStatus: String!
+    game: Game!
   }
 
   type Query {

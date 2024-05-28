@@ -45,6 +45,12 @@ export default function LobbyList() {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
+    if (lobbies.length === 0) return (
+        <div className="flex justify-center items-center h-full">
+            <span className="text-[24px] font-medium">No lobbies found</span>
+        </div>
+    )
+
     return (
         <div className="grid grid-cols-4 gap-4">
             { lobbies.map((data: any, index: number) => <LobbyCard key={index} id={data.id} title={data.name} maxPlayers={data.maxPlayers} playerCount={data.players.length} />) }
