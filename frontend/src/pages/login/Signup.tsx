@@ -29,7 +29,7 @@ export default function Signup() {
                         </div>
                         <div className="flex flex-col gap-y-0.5">
                             <label htmlFor="password" className="text-[12px] text-zinc-800">Password</label>
-                            <input type="text" id="password" value={password} spellCheck="false" autoComplete="off" onChange={(e) => setPassword(e.target.value)} />
+                            <input type="password" id="password" value={password} spellCheck="false" autoComplete="off" onChange={(e) => setPassword(e.target.value)} />
                         </div>
                     </div>
                     <button className="bg-zinc-900 rounded-[4px] py-1 text-white transition-all hover:bg-zinc-800/90" onClick={handleSignup}>Sign Up</button>
