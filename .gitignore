@@ -23,5 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-bun.lockb
 .DS_Store
