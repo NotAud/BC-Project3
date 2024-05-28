@@ -1,0 +1,16 @@
+{
+  "name": "project-3",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"cd backend && bun run dev\" \"cd frontend && bun run dev\"",
+    "start": "cd backend && bun run start",
+    "install": "cd backend && bun install && cd ../frontend && bun install",
+    "build": "cd frontend && bun run build",
+    "render-build": "bun install && bun run build"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

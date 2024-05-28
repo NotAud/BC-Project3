@@ -1,0 +1,62 @@
+[
+  {
+    "question": "What is the capital of France?",
+    "answers": ["Paris", "London", "Berlin", "Madrid"],
+    "correct": "Paris"
+  },
+  {
+    "question": "What is 4 + 4",
+    "answers": ["3", "7", "8", "2"],
+    "correct": "8"
+  },
+  {
+    "question": "How many sides are on a pentagon",
+    "answers": ["6", "4", "5", "7"],
+    "correct": "5"
+  },
+  {
+    "question": "What is the capital of Spain?",
+    "answers": ["Paris", "London", "Berlin", "Madrid"],
+    "correct": "Madrid"
+  },
+  {
+    "question": "What is 5 + 5",
+    "answers": ["3", "7", "10", "2"],
+    "correct": "10"
+  },
+  {
+    "question": "How many sides are on a hexagon",
+    "answers": ["6", "4", "5", "7"],
+    "correct": "6"
+  },
+  {
+    "question": "What is the capital of Germany?",
+    "answers": ["Paris", "London", "Berlin", "Madrid"],
+    "correct": "Berlin"
+  },
+  {
+    "question": "What is 6 + 6",
+    "answers": ["3", "7", "12", "2"],
+    "correct": "12"
+  },
+  {
+    "question": "How many sides are on a heptagon",
+    "answers": ["6", "4", "5", "7"],
+    "correct": "7"
+  },
+  {
+    "question": "What is the capital of England?",
+    "answers": ["Paris", "London", "Berlin", "Madrid"],
+    "correct": "London"
+  },
+  {
+    "question": "What is 7 + 7",
+    "answers": ["3", "14", "8", "2"],
+    "correct": "14"
+  },
+  {
+    "question": "How many sides are on a octagon",
+    "answers": ["6", "4", "5", "8"],
+    "correct": "8"
+  }
+]

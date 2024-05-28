@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply w-full h-full m-0;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  @apply w-full h-full;
+}
+
+input {
+  @apply border-none outline-none pl-1 py-0.5 rounded-[4px];
+}
+
+input:focus {
+  @apply border-none outline-none;
+}
+
+.grid-auto-fill-auto {
+  grid-template-columns: auto 1fr auto;
+}
