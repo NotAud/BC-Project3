@@ -1,26 +1,16 @@
 {
   "name": "backend",
-  "module": "server.ts",
+  "module": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch server.ts",
-    "start": "bun run ./server.ts",
-    "render-build": "bun install && bun run start"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/express-ws": "^3.0.4"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.6",
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-ws": "^5.0.2",
     "graphql": "^16.8.1",
