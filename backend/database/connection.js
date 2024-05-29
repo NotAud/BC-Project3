@@ -11,10 +11,14 @@ export async function dbConn() {
   const user = process.env.MONGO_USER;
   const password = process.env.MONGO_PASSWORD;
 
-  const uri = `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`;
+  let uri = null;
+  if (process.env.NODE_ENV === "production") {
+    uri = `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`;
+  } else {
+    uri = "mongodb://localhost:27017/quiz-game";
+  }
 
   try {
-    // await mongoose.connect("mongodb://localhost:27017/quiz-game");
     await mongoose.connect(uri, {
       serverApi: {
         version: ServerApiVersion.v1,

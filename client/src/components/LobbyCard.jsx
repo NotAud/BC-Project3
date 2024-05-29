@@ -7,9 +7,12 @@ export default function LobbyCard(lobby) {
 
   const [joinLobby] = useMutation(JOIN_LOBBY_MUTATION);
 
-  async function handleJoinLobby() {
-    const user = localStorage.getItem('user');
-    if (!user) return;
+  const user = localStorage.getItem('user');
+
+  async function handleJoinLobby(lobbyId) {
+    if (!user) {
+      return navigate(`/lobby/${lobbyId}`);
+    };
     
     const { token } = JSON.parse(user);
 
@@ -38,7 +41,9 @@ export default function LobbyCard(lobby) {
         <span className="text-lg font-semibold">{ lobby.title }</span>
         <span className="text-sm text-gray-500">{ lobby.playerCount } / { lobby.maxPlayers }</span>
       </div>
-      <button className="bg-zinc-900 rounded-lg py-1 text-white" onClick={handleJoinLobby}>Join</button>
+      <button className="bg-zinc-900 rounded-lg py-1 text-white hover:bg-zinc-900/95 transition-all" onClick={() => handleJoinLobby(lobby.id)}>
+        { !user ? 'Watch' : 'Join Lobby'}
+      </button>
     </div>
   );
 }

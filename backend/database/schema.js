@@ -45,6 +45,7 @@ const typeDefs = gql`
     getAllUsers: [User!]!
     lobbies: [Lobby!]!
     lobby(lobbyId: ID!): Lobby!
+    historicGames: [Lobby!]!
   }
 
   type Mutation {

@@ -18,7 +18,6 @@ export default class GameManager {
 
   async startRound() {
     const question = await this.generateQuestion();
-    console.log(question);
 
     this.lobby.game.currentRound = this.round;
     this.lobby.game.roundTimestamp = new Date().getTime();
@@ -40,7 +39,6 @@ export default class GameManager {
 
     let currentTime = new Date().getTime();
     const interval = setInterval(async () => {
-      console.log(this.lobby.game.roundTime);
       const elapsedTime = new Date().getTime() - currentTime;
       if (elapsedTime >= this.lobby.game.roundTime * 1000) {
         this.lobby = await LobbyModel.findById(this.lobby.id)

@@ -32,6 +32,19 @@ const resolvers = {
         throw new Error("Failed to retrieve lobby");
       }
     },
+    historicGames: async () => {
+      try {
+        const lobbies = await LobbyModel.find({
+          "game.status": "ended",
+        })
+          .limit(50)
+          .populate("owner")
+          .populate("players.user");
+        return lobbies;
+      } catch (error) {
+        throw new Error("Failed to retrieve historic games");
+      }
+    },
   },
   Mutation: {
     createUser: async (_, { username, password }) => {
@@ -90,6 +103,9 @@ const resolvers = {
 
       try {
         const user = jwt.verify(token, process.env.JWT_SECRET);
+        if (!user.userId) {
+          throw new Error("User not found");
+        }
 
         const newLobby = new LobbyModel({
           name,
@@ -152,7 +168,6 @@ const resolvers = {
 
         return lobby;
       } catch (error) {
-        console.log(error);
         throw new Error("Authentication required");
       }
     },

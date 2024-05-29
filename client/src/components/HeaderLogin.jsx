@@ -13,9 +13,9 @@ export default function HeaderLogin() {
         <>
             {
                 localStorage.getItem("user") ? (
-                    <button onClick={handleLogout}>Logout</button>
+                    <button onClick={handleLogout} className="text-[16px] hover:text-orange-700 transition-all">Logout</button>
                 ) : (
-                    <Link to="/login">Login</Link>
+                    <Link to="/login" className="text-[16px] hover:text-orange-700 transition-all">Login</Link>
                 )
             }
         </>

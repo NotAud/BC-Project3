@@ -43,6 +43,27 @@ export const GET_ALL_LOBBIES_QUERY = gql`
   }
 `;
 
+export const GET_HISTORIC_GAMES_QUERY = gql`
+  query getHistoricGames {
+    historicGames {
+      id
+      name
+      maxPlayers
+      owner {
+        id
+        username
+      }
+      players {
+        user {
+          id
+          username
+        }
+        score
+      }
+    }
+  }
+`;
+
 export const JOIN_LOBBY_MUTATION = gql`
   mutation joinLobby($lobbyId: ID!) {
     joinLobby(lobbyId: $lobbyId) {

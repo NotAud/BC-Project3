@@ -4,6 +4,7 @@ import { dbConn } from "./database/connection.js";
 import { ApolloServer } from "apollo-server-express";
 import { Server } from "socket.io";
 import { createServer } from "http";
+import LobbyModel from "./database/models/lobby.model.js";
 
 import { fileURLToPath } from "url";
 import path from "path";
@@ -68,6 +69,7 @@ async function main() {
     resolvers: resolvers,
     context: ({ req }) => ({ req, io }),
     persistedQueries: false,
+    refetchOnMount: true,
   });
 
   await apolloServer.start();
@@ -79,6 +81,8 @@ async function main() {
     console.log(
       `GraphQL ready at http://localhost:${port}${apolloServer.graphqlPath}`
     );
+
+    LobbyModel.deleteMany({ "game.status": "waiting" });
   });
 }
 

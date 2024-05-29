@@ -2,6 +2,7 @@ import Home from "../pages/home/Home.jsx";
 import Login from "../pages/login/Login.jsx";
 import Signup from "../pages/login/Signup.jsx";
 import LobbyPage from "../pages/lobby/LobbyPage.jsx";
+import HistoricGames from "../pages/historygames/HistoricGames.jsx";
 
 import MainLayout from "../layouts/MainLayout.jsx";
 
@@ -29,6 +30,10 @@ const ROUTES = [
       {
         path: "/lobby/:id",
         element: <LobbyPage />
+      },
+      {
+        path: "/historic-games",
+        element: <HistoricGames />
       },
     ]
   },
