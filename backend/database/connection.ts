@@ -11,14 +11,14 @@ export async function dbConn() {
   const uri = `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`;
 
   try {
-    await mongoose.connect("mongodb://localhost:27017/quiz-game");
-    // await mongoose.connect(uri, {
-    //   serverApi: {
-    //     version: ServerApiVersion.v1,
-    //     strict: true,
-    //     deprecationErrors: true,
-    //   },
-    // });
+    // await mongoose.connect("mongodb://localhost:27017/quiz-game");
+    await mongoose.connect(uri, {
+      serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+      },
+    });
 
     console.log("Successfully connected to MongoDB");
   } catch (error) {

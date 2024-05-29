@@ -8,8 +8,6 @@ import { createServer } from "http";
 import typeDefs from "./database/schema.ts";
 import resolvers from "./database/resolvers.ts";
 
-const port = 8080;
-
 async function createApp() {
   await dbConn();
 
@@ -64,6 +62,7 @@ async function main() {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });
 
+  const port = process.env.PORT || 8080;
   httpServer.listen(port, () => {
     console.log(`Listening on port ${port}...`);
     console.log(
