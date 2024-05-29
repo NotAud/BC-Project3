@@ -67,6 +67,7 @@ async function main() {
     typeDefs: typeDefs,
     resolvers: resolvers,
     context: ({ req }) => ({ req, io }),
+    persistedQueries: false,
   });
 
   await apolloServer.start();
