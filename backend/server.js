@@ -4,10 +4,15 @@ import { dbConn } from "./database/connection.js";
 import { ApolloServer } from "apollo-server-express";
 import { Server } from "socket.io";
 import { createServer } from "http";
+
+import { fileURLToPath } from "url";
 import path from "path";
 
 import typeDefs from "./database/schema.js";
 import resolvers from "./database/resolvers.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function createApp() {
   await dbConn();
