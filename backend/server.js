@@ -4,6 +4,7 @@ import { dbConn } from "./database/connection.js";
 import { ApolloServer } from "apollo-server-express";
 import { Server } from "socket.io";
 import { createServer } from "http";
+import path from "path";
 
 import typeDefs from "./database/schema.js";
 import resolvers from "./database/resolvers.js";
