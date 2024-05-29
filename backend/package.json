@@ -3,7 +3,9 @@
   "module": "server.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch server.ts"
+    "dev": "bun --watch server.ts",
+    "start": "bun run ./server.ts",
+    "render-build": "bun install && bun run start"
   },
   "devDependencies": {
     "@types/bun": "latest",
