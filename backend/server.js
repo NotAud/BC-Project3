@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 
 import { fileURLToPath } from "url";
-import path from "path";
+import { path, dirname } from "path";
 
 import typeDefs from "./database/schema.js";
 import resolvers from "./database/resolvers.js";
