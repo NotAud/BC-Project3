@@ -4,6 +4,7 @@ import { useQuery  } from "@apollo/client";
 import { GET_ALL_LOBBIES_QUERY } from "../api/mutations";
 import { useSocket } from "../composables/socket/useSocket";
 import { useEffect, useState } from "react";
+import LDS from "./LDS";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LobbyList() {
@@ -51,7 +52,7 @@ export default function LobbyList() {
         };
     }, [socket])
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <LDS />;
     if (error) return <p>Error: {error.message}</p>;
 
     if (lobbies.length === 0) return (

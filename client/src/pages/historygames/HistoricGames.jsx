@@ -1,6 +1,7 @@
 import { GET_HISTORIC_GAMES_QUERY } from "../../api/mutations";
 import { useQuery  } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import LDS from "../../components/LDS";
 
 export default function HistoricGames() {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function HistoricGames() {
         fetchPolicy: "network-only",
     });
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <LDS />;
     if (error) return <p>Error: {error.message}</p>;
 
     if (data.historicGames.length === 0) return (

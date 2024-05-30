@@ -7,6 +7,7 @@ import { useSocket } from "../../composables/socket/useSocket";
 import GameOver from "../../components/GameOver";
 import RoundTimer from "../../components/RoundTimer";
 import WaitingGif from "../../assets/waiting.gif";
+import LDS from "../../components/LDS";
 
 export default function LobbyPage() {
     const navigate = useNavigate();
@@ -104,7 +105,7 @@ export default function LobbyPage() {
         });
     }
 
-    if (loading || !lobby) return <p>Loading...</p>;
+    if (loading || !lobby) return <LDS />;
     if (error) return <p>Error: {error.message}</p>;
 
     function handleAnswer(answer) {
