@@ -49,6 +49,7 @@ export default class GameManager {
         this.round++;
         if (this.round === MAX_ROUNDS) {
           this.lobby.game.status = "ended";
+          this.lobby.endedAt = new Date().getTime();
           await this.lobby.save();
 
           this.emitToPlayers("gameEnded", this.lobby);

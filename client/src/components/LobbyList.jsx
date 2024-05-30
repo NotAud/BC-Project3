@@ -10,7 +10,9 @@ export default function LobbyList() {
     const socket = useSocket();
     const [lobbies, setLobbies] = useState([]);
 
-    const { loading, error, data } = useQuery(GET_ALL_LOBBIES_QUERY);
+    const { loading, error, data } = useQuery(GET_ALL_LOBBIES_QUERY, {
+        fetchPolicy: "network-only",
+    });
 
     useEffect(() => {
         if (data && data.lobbies) {
@@ -33,12 +35,18 @@ export default function LobbyList() {
             );
         };
 
+        const handleLobbyDelete = (lobbyList) => {
+            setLobbies(lobbyList);
+        }
+
         socket.on("lobbyCreated", handleLobbyCreated);
         socket.on("lobbiesUpdated", handleLobbyUpdated)
+        socket.on("lobbyDeleted", handleLobbyDelete)
 
         return () => {
             socket.off("lobbyCreated", handleLobbyCreated);
             socket.off("lobbiesUpdated", handleLobbyUpdated);
+            socket.off("lobbyDeleted", handleLobbyDelete);
         };
     }, [socket])
 

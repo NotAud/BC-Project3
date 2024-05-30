@@ -38,6 +38,7 @@ const typeDefs = gql`
     players: [Player!]!
     maxPlayers: Int!
     createdAt: String!
+    endedAt: String!
     game: Game!
   }
 

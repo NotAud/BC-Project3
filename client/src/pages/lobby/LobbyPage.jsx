@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { GET_LOBBY_QUERY, START_GAME_MUTATION, SUBMIT_ANSWER_MUTATION } from "../../api/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import RoundTimer from "../../components/RoundTimer";
 import WaitingGif from "../../assets/waiting.gif";
 
 export default function LobbyPage() {
+    const navigate = useNavigate();
     const socket = useSocket();
 
     const { id } = useParams();
@@ -21,6 +22,7 @@ export default function LobbyPage() {
 
     const { loading, error, data } = useQuery(GET_LOBBY_QUERY, {
         variables: { lobbyId: id },
+        fetchPolicy: "network-only",
     });
 
     const [startGame] = useMutation(START_GAME_MUTATION);
@@ -60,6 +62,10 @@ export default function LobbyPage() {
             setWasCorrect(null);
 
             setLobby(updatedLobby)
+        })
+
+        socket.on("lobbyDeleted", () => {
+            navigate("/")
         })
 
         return () => {

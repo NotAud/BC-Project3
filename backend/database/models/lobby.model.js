@@ -63,6 +63,10 @@ const lobbySchema = new mongoose.Schema({
       default: 10,
     },
   },
+  endedAt: {
+    type: Date,
+    default: Date.now,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -1,12 +1,16 @@
 import { useMutation  } from "@apollo/client";
-import { CREATE_LOBBY_MUTATION } from "../../api/mutations";
+import { CREATE_LOBBY_MUTATION, JOIN_LOBBY_MUTATION } from "../../api/mutations";
 
 import LobbyList from "../../components/LobbyList";
 import { useSocket } from "../../composables/socket/useSocket";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+    const navigate = useNavigate()
+
     const [createLobby] = useMutation(CREATE_LOBBY_MUTATION);
+    const [joinLobby] = useMutation(JOIN_LOBBY_MUTATION);
     const [overlayActive, setOverlayActive] = useState(false);
 
     const [lobbyName, setLobbyName] = useState("");
@@ -35,9 +39,25 @@ export default function Home() {
                     }
                 }
             });
-            socket.emit("createLobby", response)
+            socket.emit("createLobby", response);
 
-            resetLobbyForm(null, true);
+            try {
+                const { data } = await joinLobby({
+                    variables: { lobbyId: response.data.createLobby.id },
+                    context: {
+                        headers: {
+                            authorization: token
+                        }
+                    }
+                });
+
+                const lobbyData = data?.joinLobby;
+                if (lobbyData.id) {
+                    navigate(`/lobby/${lobbyData.id}`);
+                }
+            } catch (error) {
+                console.error('Error joining lobby:', error);
+            }
         } catch (error) {
             console.error(error);
         }

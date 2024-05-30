@@ -38,6 +38,7 @@ const resolvers = {
           "game.status": "ended",
         })
           .limit(50)
+          .sort({ endedAt: -1 })
           .populate("owner")
           .populate("players.user");
         return lobbies;
@@ -118,6 +119,21 @@ const resolvers = {
 
         const { io } = context;
         io.to("main").emit("lobbyCreated", savedLobby);
+
+        setTimeout(async () => {
+          const lobby = await LobbyModel.findById(savedLobby.id);
+          if (lobby.game.status === "waiting") {
+            await LobbyModel.findByIdAndDelete(savedLobby.id);
+
+            const lobbies = await LobbyModel.find({
+              "game.status": { $in: ["waiting", "started"] },
+            })
+              .populate("owner")
+              .populate("players.user");
+            io.to("main").emit("lobbyDeleted", lobbies);
+            io.to(savedLobby.id).emit("lobbyDeleted");
+          }
+        }, 60 * 1000);
 
         return savedLobby;
       } catch (error) {

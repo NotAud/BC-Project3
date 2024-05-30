@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 export default function HistoricGames() {
     const navigate = useNavigate();
 
-    const { loading, error, data } = useQuery(GET_HISTORIC_GAMES_QUERY);
+    const { loading, error, data } = useQuery(GET_HISTORIC_GAMES_QUERY, {
+        fetchPolicy: "network-only",
+    });
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -30,7 +32,7 @@ export default function HistoricGames() {
                 {
                     data.historicGames.map((game, index) => {
                         return (
-                            <button key={index} className="flex justify-between items-center bg-zinc-900 rounded-[4px] py-2 px-4 text-white hover:bg-zinc-900/95 transition-all" onClick={() => handleHistoryNavigation(game.id)}>
+                            <button key={index} className="flex justify-between items-center border rounded-[4px] py-2 px-4 hover:scale-[1.01] transition-all" onClick={() => handleHistoryNavigation(game.id)}>
                                 <div className="flex gap-x-4 items-center">
                                     <span>{game.players.length} / {game.maxPlayers}</span>
                                     <span>{game.owner.username}</span>

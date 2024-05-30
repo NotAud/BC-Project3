@@ -17,7 +17,7 @@ export default async function loginUser(username, password) {
   };
 
   try {
-    const response = await fetch("https://bc-project3.onrender.com/graphql", {
+    const response = await fetch("http://localhost:8080/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

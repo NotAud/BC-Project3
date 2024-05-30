@@ -75,14 +75,14 @@ async function main() {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });
 
+  await LobbyModel.deleteMany({ "game.status": "waiting" });
+
   const port = process.env.PORT || 8080;
   httpServer.listen(port, () => {
     console.log(`Listening on port ${port}...`);
     console.log(
       `GraphQL ready at http://localhost:${port}${apolloServer.graphqlPath}`
     );
-
-    LobbyModel.deleteMany({ "game.status": "waiting" });
   });
 }
 

@@ -60,6 +60,7 @@ export const GET_HISTORIC_GAMES_QUERY = gql`
         }
         score
       }
+      endedAt
     }
   }
 `;
