@@ -9,7 +9,7 @@ import ROUTER from './router/router';
 import { UserProvider } from './providers/UserContext';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql',
+  uri: 'https://bc-project3.on.com/graphql',
   cache: new InMemoryCache(),
 });
 
