@@ -14,7 +14,7 @@ export default async function signupUser(username, password) {
   };
 
   try {
-    const response = await fetch("https://bc-project3.on.com/graphql", {
+    const response = await fetch("https://bc-project3.onrender.com/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
