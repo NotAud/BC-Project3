@@ -39,20 +39,6 @@ export default function LobbyPage() {
 
         socket.on("lobbyUpdated", (updatedLobby) => {
             setLobby(updatedLobby)
-
-            const userData = localStorage.getItem('user');
-            if (!userData) return;
-
-            const { id } = JSON.parse(userData);
-
-            const currentPlayerData = lobby.players.find((player) => player.user.id === id);
-            const updatedPlayerData = updatedLobby.players.find((player) => player.user.id === id);
-
-            if (currentPlayerData.score < updatedPlayerData.score) {
-                setWasCorrect(true);
-            } else {
-                setWasCorrect(false);
-            }
         });
 
         socket.on("gameStarted", (updatedLobby) => {
@@ -122,6 +108,7 @@ export default function LobbyPage() {
         const { token } = JSON.parse(userData);
 
         const isCorrect = lobby.game.currentQuestion.correct === answer;
+        setWasCorrect(isCorrect);
 
         setAnswer(answer);
         submitAnswer({ 

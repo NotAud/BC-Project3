@@ -7,7 +7,7 @@ export default function MainLayout() {
     const currentYear = new Date().getFullYear()
 
     return(
-        <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full h-full overflow-x-hidden">
             <header className="flex justify-between pt-2 px-4">
                 <div className="flex items-center gap-x-6">
                     <Link to="/">
