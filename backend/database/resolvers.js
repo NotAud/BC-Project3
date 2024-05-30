@@ -130,10 +130,11 @@ const resolvers = {
             })
               .populate("owner")
               .populate("players.user");
+
             io.to("main").emit("lobbyDeleted", lobbies);
             io.to(savedLobby.id).emit("lobbyDeleted");
           }
-        }, 60 * 1000);
+        }, 120 * 1000);
 
         return savedLobby;
       } catch (error) {

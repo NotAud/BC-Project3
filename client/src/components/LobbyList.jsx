@@ -36,6 +36,7 @@ export default function LobbyList() {
         };
 
         const handleLobbyDelete = (lobbyList) => {
+            if (!lobbyList) return;
             setLobbies(lobbyList);
         }
 

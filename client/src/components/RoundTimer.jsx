@@ -17,24 +17,34 @@ function convertBadTimestamp(value) {
     return value;
 }
 
+function clamp(val, min, max) {
+    return val > max ? max : val < min ? min : val;
+}
+
 export default function CountdownTimer({ roundTimestamp, roundTime }) {
     const [remainingTime, setRemainingTime] = useState(0);
 
     useEffect(() => {
-        const timestamp = convertBadTimestamp(roundTimestamp);
+        formatTime();
 
         const timer = setInterval(() => {
-            const roundEpoch = Math.floor(new Date(timestamp).getTime() / 1000);
-            const currentTime = Math.floor(new Date().getTime() / 1000);
-            const elapsedTime = currentTime - roundEpoch;
-            const remainingSeconds = Math.max(0, Math.floor((roundTime - elapsedTime)));
-            setRemainingTime(remainingSeconds);
+            formatTime();
         }, 100);
 
         return () => {
             clearInterval(timer);
         };
     }, [roundTimestamp, roundTime]);
+
+    function formatTime() {
+        const timestamp = convertBadTimestamp(roundTimestamp);
+
+        const roundEpoch = Math.floor(new Date(timestamp).getTime() / 1000);
+        const currentTime = Math.floor(new Date().getTime() / 1000);
+        const elapsedTime = clamp(currentTime - roundEpoch, 0, roundTime);
+        const remainingSeconds = Math.max(0, Math.floor((roundTime - elapsedTime)));
+        setRemainingTime(remainingSeconds);
+    }
 
     const progressPercentage = (remainingTime / roundTime) * 100;
 
