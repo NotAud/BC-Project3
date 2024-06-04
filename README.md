@@ -27,7 +27,7 @@ Run "npm i" to download the packages and run the webserver - Requires a mongo da
 
 ## Deployment
 
-[Live Deployment](https://messenger-pigeon-caa17e19109c.herokuapp.com/)
+[Live Deployment](https://bc-project3.onrender.com/)
 
 ![Example Image of Page](https://imgur.com/02HxmJD.png)
 
